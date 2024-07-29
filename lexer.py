@@ -30,5 +30,7 @@ class Lexer:
         pass
 
     def get_token(self):
-        pass
+        if self.current_char == '+':
+            pass
+        # TODO: finish remaining if statements.
 
