@@ -1,11 +1,13 @@
-from lexer import Lexer
+from lexer import Lexer, Token, TokenType
 
 def main():
-    source = "LET foobar = 123"
+    source = "+- */"
     lexer = Lexer(source)
 
-    while lexer.get_lookahead_char() != '\0':
-        print(lexer.current_char)
-        lexer.get_next_char()
+    token = lexer.get_token()
+
+    while token.token_type != TokenType.EOF:
+        print(token.token_type)
+        token = lexer.get_token()
 
 main()
