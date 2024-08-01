@@ -84,6 +84,18 @@ class Lexer:
             token = Token(self.current_char, TokenType.ASTERISK)
         elif self.current_char == '/':
             token = Token(self.current_char, TokenType.SLASH)
+
+        elif self.current_char == '=':
+            # Differentiate '=' and '=='.
+            if self.get_lookahead_char() == '=':
+                last_char = self.current_char
+                self.get_next_char()
+                token = Token(last_char + self.current_char, TokenType.EQEQ)
+            else:
+                token = Token(self.current_char, TokenType.EQ)
+
+        # TODO: continue implementation of remaining operators.
+
         elif self.current_char == '\n':
             token = Token(self.current_char, TokenType.NEWLINE)
         elif self.current_char == '\0':
