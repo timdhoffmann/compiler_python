@@ -1,5 +1,6 @@
 from enum import Enum
 from token import MINUS
+import sys
 
 class TokenType(Enum):
     NONE = -2
@@ -60,16 +61,19 @@ class Lexer:
             return '\0'
         return self.source[self.current_pos + 1]
 
-    def abort(self):
-        pass
+    def abort(self, message: str):
+        sys.exit(f"Lexing error: {message}")
 
     def consume_whitespace(self):
-        pass
+        while self.current_char == ' ' or self.current_char == '\t' or \
+        self.current_char == '\r':
+            self.get_next_char()
 
     def skip_comment(self):
         pass
 
     def get_token(self) -> Token:
+        self.consume_whitespace()
         token = Token('', TokenType.NONE)
 
         if self.current_char == '+':
@@ -86,7 +90,7 @@ class Lexer:
             token = Token(self.current_char, TokenType.EOF)
         else:
             # Unknown token.
-            pass
+            self.abort(message=f"Unknown token: '{self.current_char}'")
 
         self.get_next_char()
         return token
