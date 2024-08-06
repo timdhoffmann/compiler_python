@@ -2,6 +2,7 @@ from enum import Enum
 from token import MINUS
 import sys
 
+
 class TokenType(Enum):
     NONE = -2
     EOF = -1
@@ -34,39 +35,44 @@ class TokenType(Enum):
     GT = 210
     GTEQ = 211
 
+
 class Token:
     def __init__(self, text: str, token_type: TokenType):
         self.text = text
         self.token_type = token_type
 
+
 class Lexer:
     def __init__(self, source: str) -> None:
         # Appendding a 'newline' character to simplify parsing of the last line.
-        self.source = source + '\n'
-        self.current_char = ''
-        self.current_pos = - 1
+        self.source = source + "\n"
+        self.current_char = ""
+        self.current_pos = -1
         self.get_next_char()
 
     def get_next_char(self):
         self.current_pos += 1
         if self.current_pos >= len(self.source):
             # End of file.
-            self.current_char = '\0'
+            self.current_char = "\0"
         else:
             self.current_char = self.source[self.current_pos]
 
     def get_lookahead_char(self):
         if self.current_pos + 1 >= len(self.source):
             # End of file.
-            return '\0'
+            return "\0"
         return self.source[self.current_pos + 1]
 
     def abort(self, message: str):
         sys.exit(f"Lexing error: {message}")
 
     def consume_whitespace(self):
-        while self.current_char == ' ' or self.current_char == '\t' or \
-        self.current_char == '\r':
+        while (
+            self.current_char == " "
+            or self.current_char == "\t"
+            or self.current_char == "\r"
+        ):
             self.get_next_char()
 
     def skip_comment(self):
@@ -74,32 +80,63 @@ class Lexer:
 
     def get_token(self) -> Token:
         self.consume_whitespace()
-        token = Token('', TokenType.NONE)
+        token = Token("", TokenType.NONE)
 
-        if self.current_char == '+':
+        if self.current_char == "+":
             token = Token(self.current_char, TokenType.PLUS)
-        elif self.current_char == '-':
+
+        elif self.current_char == "-":
             token = Token(self.current_char, TokenType.MINUS)
-        elif self.current_char == '*':
+
+        elif self.current_char == "*":
             token = Token(self.current_char, TokenType.ASTERISK)
-        elif self.current_char == '/':
+
+        elif self.current_char == "/":
             token = Token(self.current_char, TokenType.SLASH)
 
-        elif self.current_char == '=':
+        elif self.current_char == "=":
             # Differentiate '=' and '=='.
-            if self.get_lookahead_char() == '=':
+            if self.get_lookahead_char() == "=":
                 last_char = self.current_char
                 self.get_next_char()
-                token = Token(text= last_char + self.current_char, token_type= TokenType.EQEQ)
+                token = Token(
+                    text=last_char + self.current_char, token_type=TokenType.EQEQ
+                )
             else:
-                token = Token(text= self.current_char, token_type= TokenType.EQ)
+                token = Token(text=self.current_char, token_type=TokenType.EQ)
 
-        # TODO: continue implementation of remaining operators.
+        elif self.current_char == ">":
+            # Check whether this is token is > or >=
+            if self.get_lookahead_char() == "=":
+                lastChar = self.current_char
+                self.get_next_char()
+                token = Token(lastChar + self.current_char, TokenType.GTEQ)
+            else:
+                token = Token(self.current_char, TokenType.GT)
 
-        elif self.current_char == '\n':
+        elif self.current_char == "<":
+            # Check whether this is token is < or <=
+            if self.get_lookahead_char() == "=":
+                lastChar = self.current_char
+                self.get_next_char()
+                token = Token(lastChar + self.current_char, TokenType.LTEQ)
+            else:
+                token = Token(self.current_char, TokenType.LT)
+
+        elif self.current_char == "!":
+            if self.get_lookahead_char() == "=":
+                lastChar = self.current_char
+                self.get_next_char()
+                token = Token(lastChar + self.current_char, TokenType.NOTEQ)
+            else:
+                self.abort("Expected !=, got !" + self.get_lookahead_char())
+
+        elif self.current_char == "\n":
             token = Token(self.current_char, TokenType.NEWLINE)
-        elif self.current_char == '\0':
+
+        elif self.current_char == "\0":
             token = Token(self.current_char, TokenType.EOF)
+
         else:
             # Unknown token.
             self.abort(message=f"Unknown token: '{self.current_char}'")

@@ -1,7 +1,8 @@
 from lexer import Lexer, Token, TokenType
 
+
 def main():
-    source = "+- */"
+    source = "+- */ >>= = !="
     lexer = Lexer(source)
 
     token = lexer.get_token()
@@ -9,5 +10,6 @@ def main():
     while token.token_type != TokenType.EOF:
         print(token.token_type)
         token = lexer.get_token()
+
 
 main()
