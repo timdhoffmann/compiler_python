@@ -90,9 +90,9 @@ class Lexer:
             if self.get_lookahead_char() == '=':
                 last_char = self.current_char
                 self.get_next_char()
-                token = Token(last_char + self.current_char, TokenType.EQEQ)
+                token = Token(text= last_char + self.current_char, token_type= TokenType.EQEQ)
             else:
-                token = Token(self.current_char, TokenType.EQ)
+                token = Token(text= self.current_char, token_type= TokenType.EQ)
 
         # TODO: continue implementation of remaining operators.
 
